@@ -18,6 +18,25 @@ def health_check(request):
     """Simple health check endpoint for Railway"""
     return JsonResponse({'status': 'healthy', 'message': 'Django app is running'})
 
+def debug_info(request):
+    """Debug endpoint to help troubleshoot Railway deployment"""
+    import os
+    import sys
+    from django.conf import settings
+    
+    debug_info = {
+        'status': 'ok',
+        'django_version': settings.VERSION,
+        'python_version': sys.version,
+        'port': os.environ.get('PORT', 'not set'),
+        'debug': settings.DEBUG,
+        'allowed_hosts': settings.ALLOWED_HOSTS,
+        'database_engine': settings.DATABASES['default']['ENGINE'],
+        'static_url': settings.STATIC_URL,
+        'static_root': getattr(settings, 'STATIC_ROOT', 'not set'),
+    }
+    return JsonResponse(debug_info)
+
 def leetcode_daily(request):
     try:
         # LeetCode GraphQL endpoint
