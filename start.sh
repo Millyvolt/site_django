@@ -3,8 +3,8 @@
 # Exit on any error
 set -e
 
-echo "Starting minimal app for Railway..."
+echo "Starting Django app for Railway..."
 
-# Start the minimal app
-echo "Starting minimal HTTP server..."
-exec python app.py
+# Start the Django app
+echo "Starting Django application..."
+exec python django_app.py

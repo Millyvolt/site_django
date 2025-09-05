@@ -1,11 +1,14 @@
 [phases.setup]
-nixPkgs = ["python311"]
+nixPkgs = ["python311", "pip"]
 
 [phases.install]
-cmds = []
+cmds = ["pip install -r requirements.txt"]
 
 [phases.build]
-cmds = []
+cmds = [
+  "python manage.py collectstatic --noinput --settings=config.settings_production",
+  "python manage.py migrate --settings=config.settings_production"
+]
 
 [start]
-cmd = "python app.py"
+cmd = "python django_app.py"
