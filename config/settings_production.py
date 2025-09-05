@@ -12,8 +12,11 @@ DEBUG = False
 # You should set this as an environment variable in production
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-0=h)p)ug1f09kb9jj+5=9qqd=%5b^ysmp6mkhnrc35(wk^z3&k')
 
-# Allow all hosts for now - you should restrict this to your domain in production
+# Allow all hosts for Railway deployment
 ALLOWED_HOSTS = ['*']
+
+# Railway specific settings
+PORT = os.environ.get('PORT', 8000)
 
 # Database configuration for production
 # You can use PostgreSQL, MySQL, or other production databases
