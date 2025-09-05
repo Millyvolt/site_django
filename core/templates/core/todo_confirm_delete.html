@@ -1,0 +1,187 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Delete ToDo{% endblock %}
+
+{% block extra_css %}
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a2234, #151a27);
+      border-radius: 15px;
+      border: 1px solid #2a2f3a;
+    }
+    h1 { 
+      font-weight: 700; 
+      margin-bottom: 10px; 
+      color: #ef4444;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background: linear-gradient(180deg, #1a2234, #151a27);
+      color: #e6e9ef;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 1px solid #2a2f3a;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, #1f2a40, #171e2e);
+    }
+    .confirm-container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .confirm-card {
+      background: linear-gradient(135deg, #1a2234, #151a27);
+      border-radius: 15px;
+      padding: 30px;
+      border: 1px solid #ef4444;
+      text-align: center;
+    }
+    .warning-icon {
+      font-size: 3em;
+      color: #ef4444;
+      margin-bottom: 20px;
+    }
+    .confirm-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      color: #e6e9ef;
+      margin-bottom: 15px;
+    }
+    .confirm-message {
+      color: #b4bdc6;
+      margin-bottom: 30px;
+      line-height: 1.6;
+    }
+    .todo-preview {
+      background: #2a2f3a;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 30px;
+      text-align: left;
+    }
+    .todo-preview-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #e6e9ef;
+      margin-bottom: 10px;
+    }
+    .todo-preview-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      font-size: 0.9em;
+    }
+    .meta-label {
+      color: #b4bdc6;
+    }
+    .meta-value {
+      color: #e6e9ef;
+      font-weight: 600;
+    }
+    .priority {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+    .priority-low { background: #6b7280; color: white; }
+    .priority-medium { background: #3b82f6; color: white; }
+    .priority-high { background: #f59e0b; color: white; }
+    .priority-urgent { background: #ef4444; color: white; }
+    .status {
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+    .status-pending { background: #6b7280; color: white; }
+    .status-in_progress { background: #3b82f6; color: white; }
+    .status-completed { background: #10b981; color: white; }
+    .status-cancelled { background: #ef4444; color: white; }
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1em;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: white;
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'todo_list' %}" class="back-btn">← Back to ToDo's</a>
+    
+    <div class="header">
+      <h1>Delete ToDo</h1>
+    </div>
+
+    <div class="confirm-container">
+      <div class="confirm-card">
+        <div class="warning-icon">⚠️</div>
+        <div class="confirm-title">Are you sure?</div>
+        <div class="confirm-message">
+          This action cannot be undone. The ToDo will be permanently deleted.
+        </div>
+        
+        <div class="todo-preview">
+          <div class="todo-preview-title">{{ todo.title }}</div>
+          <div class="todo-preview-meta">
+            <div class="meta-item">
+              <span class="meta-label">Priority:</span>
+              <span class="priority priority-{{ todo.priority }}">{{ todo.get_priority_display }}</span>
+            </div>
+            <div class="meta-item">
+              <span class="meta-label">Status:</span>
+              <span class="status status-{{ todo.status }}">{{ todo.get_status_display }}</span>
+            </div>
+            {% if todo.due_date %}
+              <div class="meta-item">
+                <span class="meta-label">Due:</span>
+                <span class="meta-value">{{ todo.due_date|date:"M d, Y H:i" }}</span>
+              </div>
+            {% endif %}
+          </div>
+          {% if todo.description %}
+            <div style="color: #b4bdc6; font-size: 0.9em;">
+              {{ todo.description|truncatewords:20 }}
+            </div>
+          {% endif %}
+        </div>
+        
+        <form method="post" style="display: inline;">
+          {% csrf_token %}
+          <div class="form-actions">
+            <a href="{% url 'todo_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-danger">Delete ToDo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}

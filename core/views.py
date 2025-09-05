@@ -1,7 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib import messages
+from django.utils import timezone
 import requests
 import json
 from datetime import datetime, timedelta
+from .models import Todo
 
 def home(request):
     return render(request, 'core/home.html')
@@ -344,3 +347,78 @@ def leetcode_question_detail(request, question_slug):
         context = {'error': f'Unexpected error: {str(e)}'}
     
     return render(request, 'core/leetcode_question_detail.html', context)
+
+def todo_list(request):
+    todos = Todo.objects.all()
+    context = {
+        'todos': todos,
+    }
+    return render(request, 'core/todo_list.html', context)
+
+def todo_create(request):
+    if request.method == 'POST':
+        title = request.POST.get('title')
+        description = request.POST.get('description', '')
+        priority = request.POST.get('priority', 'medium')
+        status = request.POST.get('status', 'pending')
+        due_date_str = request.POST.get('due_date', '')
+        
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                pass
+        
+        todo = Todo.objects.create(
+            title=title,
+            description=description,
+            priority=priority,
+            status=status,
+            due_date=due_date
+        )
+        messages.success(request, f'ToDo "{todo.title}" created successfully!')
+        return redirect('todo_list')
+    
+    return render(request, 'core/todo_form.html', {'form_type': 'create'})
+
+def todo_update(request, pk):
+    todo = get_object_or_404(Todo, pk=pk)
+    
+    if request.method == 'POST':
+        todo.title = request.POST.get('title')
+        todo.description = request.POST.get('description', '')
+        todo.priority = request.POST.get('priority', 'medium')
+        todo.status = request.POST.get('status', 'pending')
+        due_date_str = request.POST.get('due_date', '')
+        
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                pass
+        todo.due_date = due_date
+        
+        todo.save()
+        messages.success(request, f'ToDo "{todo.title}" updated successfully!')
+        return redirect('todo_list')
+    
+    context = {
+        'todo': todo,
+        'form_type': 'update'
+    }
+    return render(request, 'core/todo_form.html', context)
+
+def todo_delete(request, pk):
+    todo = get_object_or_404(Todo, pk=pk)
+    if request.method == 'POST':
+        todo_title = todo.title
+        todo.delete()
+        messages.success(request, f'ToDo "{todo_title}" deleted successfully!')
+        return redirect('todo_list')
+    
+    context = {
+        'todo': todo,
+    }
+    return render(request, 'core/todo_confirm_delete.html', context)

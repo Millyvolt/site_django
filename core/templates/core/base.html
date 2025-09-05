@@ -40,7 +40,7 @@
     }
     
     /* Wallpaper 1: Circuit Board */
-    .wallpaper-1 {
+    .wallpaper-6 {
       background: 
         radial-gradient(circle at 20% 80%, #00ff88 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, #0088ff 0%, transparent 50%),
@@ -104,7 +104,7 @@
     }
     
     /* Wallpaper 6: Cyberpunk City */
-    .wallpaper-6 {
+    .wallpaper-1 {
       background: 
         radial-gradient(circle at 10% 20%, #ff0088 0%, transparent 30%),
         radial-gradient(circle at 90% 80%, #00ff88 0%, transparent 30%),
@@ -286,17 +286,17 @@
   
   <script>
     // Wallpaper rotation system
-    let currentWallpaper = 1;
+    let currentWallpaper = parseInt(localStorage.getItem('currentWallpaper')) || 1;
     const totalWallpapers = 6;
     const rotationInterval = 10 * 60 * 1000; // 10 minutes in milliseconds
     
     const wallpaperNames = [
-      'Circuit Board',
+      'Cyberpunk City',
       'Digital Rain', 
       'Neon Grid',
       'Holographic',
       'Matrix Code',
-      'Cyberpunk City'
+      'Circuit Board'
     ];
     
     function changeWallpaper() {
@@ -328,6 +328,10 @@
         indicator.style.color = `hsl(${currentWallpaper * 60}, 70%, 50%)`;
         console.log('Updated indicator text and color');
       }
+      
+      // Save current wallpaper to localStorage
+      localStorage.setItem('currentWallpaper', currentWallpaper.toString());
+      console.log('Saved wallpaper', currentWallpaper, 'to localStorage');
     }
     
     // Create floating particles
@@ -345,9 +349,38 @@
       }
     }
     
+    // Initialize wallpaper from saved state
+    function initializeWallpaper() {
+      console.log('Initializing wallpaper from localStorage:', currentWallpaper);
+      
+      // Remove active class from all wallpapers
+      for (let i = 1; i <= totalWallpapers; i++) {
+        const element = document.getElementById(`wallpaper-${i}`);
+        if (element) {
+          element.classList.remove('active');
+        }
+      }
+      
+      // Set the saved wallpaper as active
+      const activeElement = document.getElementById(`wallpaper-${currentWallpaper}`);
+      if (activeElement) {
+        activeElement.classList.add('active');
+        console.log('Set wallpaper', currentWallpaper, 'as active');
+      }
+      
+      // Update indicator
+      const indicator = document.getElementById('wallpaper-indicator');
+      if (indicator) {
+        indicator.textContent = `Wallpaper ${currentWallpaper}/6 - ${wallpaperNames[currentWallpaper - 1]}`;
+        indicator.style.borderColor = `hsl(${currentWallpaper * 60}, 70%, 50%)`;
+        indicator.style.color = `hsl(${currentWallpaper * 60}, 70%, 50%)`;
+      }
+    }
+    
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
       console.log('DOM loaded, initializing wallpaper system...');
+      console.log('Current wallpaper from localStorage:', currentWallpaper);
       
       createParticles();
       
@@ -361,11 +394,13 @@
         }
       }
       
+      // Initialize wallpaper from saved state
+      initializeWallpaper();
+      
       // Check indicator element
       const indicator = document.getElementById('wallpaper-indicator');
       if (indicator) {
         console.log('Wallpaper indicator element found');
-        indicator.textContent = `Wallpaper ${currentWallpaper}/6 - ${wallpaperNames[currentWallpaper - 1]}`;
         
         // Manual wallpaper change on click (for testing)
         indicator.addEventListener('click', function() {

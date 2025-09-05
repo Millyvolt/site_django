@@ -1,0 +1,185 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{% if form_type == 'create' %}Add New ToDo{% else %}Edit ToDo{% endif %}{% endblock %}
+
+{% block extra_css %}
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: linear-gradient(135deg, #1a2234, #151a27);
+      border-radius: 15px;
+      border: 1px solid #2a2f3a;
+    }
+    h1 { 
+      font-weight: 700; 
+      margin-bottom: 10px; 
+      color: #3b82f6;
+    }
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      background: linear-gradient(180deg, #1a2234, #151a27);
+      color: #e6e9ef;
+      text-decoration: none;
+      border-radius: 8px;
+      border: 1px solid #2a2f3a;
+      transition: all 0.2s ease;
+    }
+    .back-btn:hover {
+      border-color: #3b82f6;
+      background: linear-gradient(180deg, #1f2a40, #171e2e);
+    }
+    .form-container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .form-card {
+      background: linear-gradient(135deg, #1a2234, #151a27);
+      border-radius: 15px;
+      padding: 30px;
+      border: 1px solid #2a2f3a;
+    }
+    .form-group {
+      margin-bottom: 25px;
+    }
+    .form-label {
+      display: block;
+      color: #e6e9ef;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 1.1em;
+    }
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: #2a2f3a;
+      border: 1px solid #3b82f3a;
+      border-radius: 8px;
+      color: #e6e9ef;
+      font-size: 1em;
+      transition: all 0.2s ease;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .form-textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+    .form-select {
+      width: 100%;
+      padding: 12px 16px;
+      background: #2a2f3a;
+      border: 1px solid #3b82f3a;
+      border-radius: 8px;
+      color: #e6e9ef;
+      font-size: 1em;
+      transition: all 0.2s ease;
+    }
+    .form-select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .form-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 30px;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1em;
+      transition: all 0.2s ease;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      color: white;
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, #6b7280, #4b5563);
+      color: white;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .form-help {
+      color: #b4bdc6;
+      font-size: 0.9em;
+      margin-top: 5px;
+    }
+{% endblock %}
+
+{% block content %}
+    <a href="{% url 'todo_list' %}" class="back-btn">← Back to ToDo's</a>
+    
+    <div class="header">
+      <h1>{% if form_type == 'create' %}Add New ToDo{% else %}Edit ToDo{% endif %}</h1>
+    </div>
+
+    <div class="form-container">
+      <div class="form-card">
+        <form method="post">
+          {% csrf_token %}
+          
+          <div class="form-group">
+            <label for="title" class="form-label">Title *</label>
+            <input type="text" id="title" name="title" class="form-input" 
+                   value="{% if todo %}{{ todo.title }}{% endif %}" 
+                   placeholder="Enter ToDo title..." required>
+            <div class="form-help">A brief description of the feature or note</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-input form-textarea" 
+                      placeholder="Enter detailed description...">{% if todo %}{{ todo.description }}{% endif %}</textarea>
+            <div class="form-help">Detailed notes, requirements, or implementation ideas</div>
+          </div>
+          
+          <div class="form-group">
+            <label for="priority" class="form-label">Priority</label>
+            <select id="priority" name="priority" class="form-select">
+              <option value="low" {% if todo and todo.priority == 'low' %}selected{% endif %}>Low</option>
+              <option value="medium" {% if todo and todo.priority == 'medium' %}selected{% endif %}>Medium</option>
+              <option value="high" {% if todo and todo.priority == 'high' %}selected{% endif %}>High</option>
+              <option value="urgent" {% if todo and todo.priority == 'urgent' %}selected{% endif %}>Urgent</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="status" class="form-label">Status</label>
+            <select id="status" name="status" class="form-select">
+              <option value="pending" {% if todo and todo.status == 'pending' %}selected{% endif %}>Pending</option>
+              <option value="in_progress" {% if todo and todo.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+              <option value="completed" {% if todo and todo.status == 'completed' %}selected{% endif %}>Completed</option>
+              <option value="cancelled" {% if todo and todo.status == 'cancelled' %}selected{% endif %}>Cancelled</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="due_date" class="form-label">Due Date</label>
+            <input type="datetime-local" id="due_date" name="due_date" class="form-input"
+                   value="{% if todo and todo.due_date %}{{ todo.due_date|date:'Y-m-d\TH:i' }}{% endif %}">
+            <div class="form-help">Optional deadline for this ToDo</div>
+          </div>
+          
+          <div class="form-actions">
+            <a href="{% url 'todo_list' %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+              {% if form_type == 'create' %}Create ToDo{% else %}Update ToDo{% endif %}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+{% endblock %}
