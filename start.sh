@@ -3,8 +3,8 @@
 # Exit on any error
 set -e
 
-echo "Starting Django deployment..."
+echo "Starting minimal app for Railway..."
 
-# Start the application with Django's development server for Railway
-echo "Starting Django development server..."
-exec python manage.py runserver 0.0.0.0:$PORT --settings=config.settings_production
+# Start the minimal app
+echo "Starting minimal HTTP server..."
+exec python app.py
