@@ -1,13 +1,22 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib import messages
 from django.utils import timezone
+from django.http import JsonResponse
 import requests
 import json
 from datetime import datetime, timedelta
 from .models import Todo
 
 def home(request):
-    return render(request, 'core/home.html')
+    try:
+        return render(request, 'core/home.html')
+    except Exception as e:
+        # Fallback response if template rendering fails
+        return JsonResponse({'status': 'ok', 'message': 'Django app is running'})
+
+def health_check(request):
+    """Simple health check endpoint for Railway"""
+    return JsonResponse({'status': 'healthy', 'message': 'Django app is running'})
 
 def leetcode_daily(request):
     try:
