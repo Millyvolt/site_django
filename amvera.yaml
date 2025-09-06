@@ -1,0 +1,75 @@
+# Amvera Cloud Configuration for Django Site
+# This file configures your Django application for deployment on Amvera Cloud
+
+# Application configuration
+app:
+  name: django-site
+  runtime: python
+  version: "3.11"
+  
+# Build configuration
+build:
+  commands:
+    - pip install --upgrade pip
+    - pip install -r requirements.txt
+    - python manage.py collectstatic --noinput
+    - python manage.py migrate
+
+# Environment variables
+env:
+  DJANGO_SETTINGS_MODULE: "config.settings"
+  PYTHONPATH: "/app"
+  DEBUG: "False"
+  ALLOWED_HOSTS: "your-domain.com,www.your-domain.com"
+  SECRET_KEY: "your-super-secret-key-here"
+  # DATABASE_URL will be automatically provided by Amvera PostgreSQL service
+
+# Port configuration
+port: 8000
+
+# Health check configuration
+healthcheck:
+  path: "/health/"
+  interval: 30
+  timeout: 10
+  retries: 3
+
+# Scaling configuration
+scaling:
+  min_instances: 1
+  max_instances: 3
+  target_cpu: 70
+
+# Database configuration (using Amvera's managed PostgreSQL)
+database:
+  type: postgresql
+  version: "15"
+  size: "1GB"
+
+# Static files configuration
+static:
+  path: "/static/"
+  directory: "staticfiles"
+
+# Dependencies
+dependencies:
+  - python
+  - pip
+  - postgresql-client
+
+# Deployment hooks
+deploy:
+  before_deploy:
+    - echo "Starting Django deployment..."
+  after_deploy:
+    - echo "Django deployment completed successfully!"
+
+# Resource limits
+resources:
+  memory: "512Mi"
+  cpu: "500m"
+
+# Logging configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
